@@ -3,12 +3,13 @@ const cros = require("cors");
 const app = express();
 
 app.use(cros());
+const rondom = Math.floor(Math.random() * 1000);
 
 app.get("/", (req, res) => {
   res.json({
     messages: [{
         id: 1,
-        text: "Hello, world!",
+        text: "$rondom is a random number" + rondom.toString(),
     },{
         id: 2,
         text: "Welcome to the API!",
