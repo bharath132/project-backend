@@ -6,10 +6,11 @@ app.use(cros());
 const rondom = Math.floor(Math.random() * 1000);
 
 app.get("/", (req, res) => {
+  const rondom = Math.floor(Math.random() * 1000);
   res.json({
     messages: [{
         id: 1,
-        text: "$rondom is a random number" + rondom.toString(),
+        text: `random number ${rondom}`,
     },{
         id: 2,
         text: "Welcome to the API!",
