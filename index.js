@@ -7,7 +7,11 @@ const rondom = Math.floor(Math.random() * 1000);
 
 app.get("/", (req, res) => {
   const rondom = Math.floor(Math.random() * 100);
-  res.json(rondom);
+  res.json({
+  "productName": "Smart Watch",
+  "deviceName": "Heart Monitor",
+  "userValue": `${rondom}`,
+});
 });
 
 
