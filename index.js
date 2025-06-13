@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
     sendPushNotification(
       "fRob3roCSq-GDeRd4rqv57:APA91bFZpoXyFLrXsJwAaeiM5W2ySWZLDyGm2Uk7Rl9QGUN6l9gWgfdaWHCdReyNaOGHPuV_Hdzqmg39-JNpcTBv29gE6nsXphqPNC3ARmt5Cv8o8CxDfJ0",
       "Alert",
-      "Your heart rate is high!"
+      `Your heart rate is high! ${rondom} bpm`
     );
   }
 });
