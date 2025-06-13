@@ -1,9 +1,11 @@
 const express = require("express");
 const cros = require("cors");
+const sendPushNotification = require('./sendNotification.js');
+const { log } = require("console");
 const app = express();
 app.use(express.json());
 app.use(cros());
-const rondom = Math.floor(Math.random() * 1000);
+
 
 app.get("/", (req, res) => {
   const rondom = Math.floor(Math.random() * 100);
@@ -12,6 +14,11 @@ app.get("/", (req, res) => {
   "deviceName": "Heart Monitor",
   "userValue": `${rondom}`,
 });
+if( rondom > 50) {
+  console.log("High heart rate detected:", rondom);
+  sendPushNotification("f21Y7sIcTPeLUS92JoD_Gb:APA91bF3WQ42tbGGih6Y-VazsC7JCz8u6B2qAPY025401RNWG9Gew_odG_MrbZQ-4CQof_qh-DzAiypVV2Zydh1yST43Vs0oU5yYheGohWLfxPFUgIwMUoM", "Alert", "Your heart rate is high!");
+}
+
 });
 
 app.post("/post", (req, res) => {
