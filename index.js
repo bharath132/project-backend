@@ -8,7 +8,7 @@ app.use(cros());
 
 let nextRondom = 0;
 app.get("/", (req, res) => {
-  const rondom = Math.floor(Math.random() * 1);
+  const rondom = Math.floor(Math.random() * 9);
   nextRondom += rondom;
   res.json({
     productName: "Smart Watch",
