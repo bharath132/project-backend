@@ -6,16 +6,16 @@ const app = express();
 app.use(express.json());
 app.use(cros());
 
+let nextRondom = 0 ;
 app.get("/", (req, res) => {
   const rondom = Math.floor(Math.random() * 10);
-  const nextRondom = 0 ;
   nextRondom += rondom;
   res.json({
     productName: "Smart Watch",
     deviceName: "Heart Monitor",
     userValue: `${nextRondom}`,
   });
-  if (rondom > 50) {
+  if (nextRondom > 50) {
     console.log("High heart rate detected:", nextRondom);
     sendPushNotification(
       process.env.FCM_TOKEN,
