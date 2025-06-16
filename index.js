@@ -8,6 +8,10 @@ app.use(cros());
 
 let nextRondom = 0;
 app.get("/", (req, res) => {
+  if(nextRondom > 100){
+    nextRondom = 0; // Reset the counter if it exceeds 100
+    console.log("Resetting nextRondom to 0");
+  }
   const rondom = Math.floor(Math.random() * 9);
   nextRondom += rondom;
   res.json({
