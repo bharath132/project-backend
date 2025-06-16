@@ -6,9 +6,9 @@ const app = express();
 app.use(express.json());
 app.use(cros());
 
-let nextRondom = 0 ;
+let nextRondom = 0;
 app.get("/", (req, res) => {
-  const rondom = Math.floor(Math.random() * 10);
+  const rondom = Math.floor(Math.random() * 1);
   nextRondom += rondom;
   res.json({
     productName: "Smart Watch",
