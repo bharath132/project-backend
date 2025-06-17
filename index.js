@@ -7,6 +7,7 @@ app.use(express.json());
 app.use(cros());
 
 let nextRondom = 0;
+let history = {};
 app.get("/", (req, res) => {
   if(nextRondom > 100){
     nextRondom = 0; // Reset the counter if it exceeds 100
@@ -14,11 +15,16 @@ app.get("/", (req, res) => {
   }
   const rondom = Math.floor(Math.random() * 9);
   nextRondom += rondom;
-  res.json({
-    productName: "Smart Watch",
-    deviceName: "Heart Monitor",
-    userValue: `${nextRondom}`,
-  });
+// Store the current value in history
+if(nextRondom%50 == 0 ){  history = {
+    ...history,
+    [new Date().toISOString()]: nextRondom,
+  };}
+if (Object.keys(history).length > 50) {
+  const oldestKey = Object.keys(history)[0];
+  delete history[oldestKey];
+}
+  //send notification if value is high
   if (nextRondom > 50) {
     console.log("High heart rate detected:", nextRondom);
     sendPushNotification(
@@ -27,6 +33,14 @@ app.get("/", (req, res) => {
       `Your heart rate is high! ${rondom} bpm`
     );
   }
+
+  // respond
+  res.json({
+    productName: "Smart Watch",
+    deviceName: "Heart Monitor",
+    userValue: `${nextRondom}`,
+    history: Object.entries(history).slice().reverse().map(([time, value]) => ({ time, value })), // Reverse the history to show the latest values first
+  });
 });
 
 app.post("/post", (req, res) => {
