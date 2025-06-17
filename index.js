@@ -1,13 +1,48 @@
 const express = require("express");
 const cros = require("cors");
 const sendPushNotification = require("./sendNotification.js");
+const {google} = require("googleapis");
 require("dotenv").config();
+
 const app = express();
+
 app.use(express.json());
 app.use(cros());
 
 let nextRondom = 0;
 let history = {};
+
+// Initialize Google Sheets API
+
+
+const auth = new google.auth.GoogleAuth({
+  keyFile: "./credentials.json",
+  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+});
+
+const spreadsheetId = '14wKbS-ddV--wrrXvx-KM0GqMEsRrUAASlWKoLdNzIMA';
+
+async function appendToSheet(data) {
+  try {
+    const authClient = await auth.getClient(); // 🔥 This is the key line
+    const sheets = google.sheets({ version: "v4", auth: authClient });
+
+    const response = await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: "Sheet1!A:B",
+      valueInputOption: "RAW",
+      resource: {
+        values: [[new Date().toISOString(), data]],
+      },
+    });
+
+    console.log("✅ Data appended to sheet:", response.data.updates.updatedRange);
+  } catch (error) {
+    console.error("❌ Error appending data to sheet:", error.message);
+  }
+}
+
+
 app.get("/", (req, res) => {
   const rondom = Math.floor(Math.random() * 9);
   nextRondom += rondom;
@@ -16,7 +51,7 @@ app.get("/", (req, res) => {
     nextRondom = 0; // Reset the counter if it exceeds 100
     console.log("Resetting nextRondom to 0");
   }
-
+  appendToSheet(nextRondom); // Append the current value to Google Sheets
   // Store the current value in history
   if (nextRondom % 50 == 0 && nextRondom != 0) {
     history = {
