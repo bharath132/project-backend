@@ -24,6 +24,7 @@ if (Object.keys(history).length > 50) {
   const oldestKey = Object.keys(history)[0];
   delete history[oldestKey];
 }
+    console.log(history)
   //send notification if value is high
   if (nextRondom > 50) {
     console.log("High heart rate detected:", nextRondom);
