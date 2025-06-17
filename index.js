@@ -1,11 +1,11 @@
 const express = require("express");
 const cros = require("cors");
 const sendPushNotification = require("./sendNotification.js");
-const {google} = require("googleapis");
+const { google } = require("googleapis");
 require("dotenv").config();
-
 const app = express();
-
+const fs = require("fs");
+const path = require("path");
 app.use(express.json());
 app.use(cros());
 
@@ -13,15 +13,21 @@ let nextRondom = 0;
 let history = {};
 
 // Initialize Google Sheets API
-
+const credentialsJson = Buffer.from(
+  process.env.GOOGLE_CREDENTIALS_BASE64,
+  "base64"
+).toString("utf-8");
+const tempPath = path.join("/tmp", "credentials.json");
+fs.writeFileSync(tempPath, credentialsJson);
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: "./credentials.json",
+  keyFile: tempPath,
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
-const spreadsheetId = '14wKbS-ddV--wrrXvx-KM0GqMEsRrUAASlWKoLdNzIMA';
+const spreadsheetId = "14wKbS-ddV--wrrXvx-KM0GqMEsRrUAASlWKoLdNzIMA";
 
+// Function to append data to Google Sheets
 async function appendToSheet(data) {
   try {
     const authClient = await auth.getClient(); // 🔥 This is the key line
@@ -36,12 +42,14 @@ async function appendToSheet(data) {
       },
     });
 
-    console.log("✅ Data appended to sheet:", response.data.updates.updatedRange);
+    console.log(
+      "✅ Data appended to sheet:",
+      response.data.updates.updatedRange
+    );
   } catch (error) {
     console.error("❌ Error appending data to sheet:", error.message);
   }
 }
-
 
 app.get("/", (req, res) => {
   const rondom = Math.floor(Math.random() * 9);
