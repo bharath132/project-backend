@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
   }
 
   // Store the current value in history
-  if (nextRondom % 50 == 0) {
+  if (nextRondom % 50 == 0 && nextRondom != 0) {
     history = {
       ...history,
       [new Date().toISOString()]: nextRondom,
@@ -34,18 +34,18 @@ app.get("/", (req, res) => {
 
   //send notification if value is high
   if (nextRondom > 50) {
-    console.log("High heart rate detected:", nextRondom);
+    console.log("High rate detected:", nextRondom);
     sendPushNotification(
       process.env.FCM_TOKEN,
       "Alert",
-      `Your heart rate is high! ${rondom} bpm`
+      `Your bag filled 50% ${rondom} `
     );
   }
 
   // respond
   res.json({
-    productName: "Smart Watch",
-    deviceName: "Heart Monitor",
+    productName: "Urinary Bladder Monitor",
+    deviceName: "Urinary Bladder Monitor",
     userValue: `${nextRondom}`,
     history: Object.entries(history)
       .slice()
@@ -60,8 +60,7 @@ app.post("/post", (req, res) => {
     receivedData: req.body,
   });
 });
-// Binding the server to '0.0.0.0' allows it to accept connections from any network interface,
-// making it accessible not only from localhost but also from other devices in the same network.
+
 app.listen(3000, "0.0.0.0", () => {
   console.log("Server is running on http://0.0.0.0:3000");
 });
