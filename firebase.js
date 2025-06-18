@@ -8,9 +8,12 @@ const credentialsJson = Buffer.from(process.env.FIREBASE_CREDENTIALS_BASE64, "ba
 const tempPath = path.join(os.tmpdir(), "firebase_credentials.json");
 fs.writeFileSync(tempPath, credentialsJson);
 
+// ✅ Parse the JSON instead of using the file path
+const parsedCredentials = JSON.parse(credentialsJson);
+
 // Initialize Firebase Admin
 admin.initializeApp({
-  credential: admin.credential.cert(tempPath),
+  credential: admin.credential.cert(parsedCredentials),
 });
 
 module.exports = admin;

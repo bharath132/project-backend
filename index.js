@@ -34,7 +34,7 @@ const auth = new google.auth.GoogleAuth({
 
 const spreadsheetId = "14wKbS-ddV--wrrXvx-KM0GqMEsRrUAASlWKoLdNzIMA";
 function getISTTime() {
-  const utcDate = new Date("2025-06-18T20:15:50.000Z");
+  const utcDate = new Date();
 
   return utcDate.toLocaleString("en-IN", {
     timeZone: "Asia/Kolkata",
