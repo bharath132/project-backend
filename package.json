@@ -8,6 +8,7 @@
     "googleapis": "^150.0.1",
     "node": "^24.2.0",
     "nodejs": "^0.0.0",
+    "nodemon": "^3.1.10",
     "serverless-http": "^3.2.0"
   },
   "name": "project-backend",
