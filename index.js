@@ -87,12 +87,12 @@ app.get("/", async (req, res) => {
   }
   await appendToSheet(nextRondom);
   await getFromSheet();
-  const simplified = sheetData.filter(
+  let simplified = sheetData.filter(
     (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
   );
-  if (simplified.length > 50) {
-    simplified.slice(-50).reverse(); // Reverse the array to show the latest values first
-  }
+if (simplified.length > 50) {
+  simplified = simplified.slice(-50).reverse();
+}
   console.log("Sheet data:", simplified);
   // Store the current value in history
   if (nextRondom % 50 == 0 && nextRondom != 0) {
@@ -115,14 +115,12 @@ app.get("/", async (req, res) => {
     sendPushNotification(
       process.env.FCM_TOKEN,
       "Alert",
-      `Your bag filled 50% ${rondom} `
+      `Your bag filled 50%  `
     );
   }
 
   // respond
   res.json({
-    productName: "Urinary Bladder Monitor",
-    deviceName: "Urinary Bladder Monitor",
     userValue: `${nextRondom}`,
     history: simplified.map(([time, value]) => ({
       time,
