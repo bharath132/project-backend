@@ -111,6 +111,7 @@ app.get("/", async (req, res) => {
   if (simplified.length > 50) {
     simplified = simplified.slice(-50).reverse();
   }
+  ChartData = sheetData.slice(-3600);
   console.log("Sheet data:", simplified);
 
   // respond
