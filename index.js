@@ -1,38 +1,43 @@
 const express = require("express");
 const cors = require("cors");
-const { google } = require("googleapis");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 require("dotenv").config();
-
 const sendPushNotification = require("./sendNotification.js");
+const { google } = require("googleapis");
+
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 let nextRondom = 0;
-let history = {};
 let sheetData = [];
-let ChartData = [];
-const os = require("os");
+let ChartData = [];let value;
+const warning1Threshold = 500;
+const warning2Threshold = 1000;
+const warning3Threshold = 1500;
+const alertThreshold = 2000;
+const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
 
-// 1. Decode credentials
+//Decode credentials
 const credentialsJson = Buffer.from(
   process.env.GOOGLE_CREDENTIALS_BASE64,
   "base64"
 ).toString("utf-8");
 
-// 2. Write to temp path (safe for Vercel and Windows)
+//Write to temp path (safe for Vercel and Windows)
 const tempPath = path.join(os.tmpdir(), "credentials.json");
 fs.writeFileSync(tempPath, credentialsJson);
 
-// 3. Auth setup
+//Auth setup
 const auth = new google.auth.GoogleAuth({
   keyFile: tempPath, //  Use the temp path
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
-const spreadsheetId = "14wKbS-ddV--wrrXvx-KM0GqMEsRrUAASlWKoLdNzIMA";
+//IST time
 function getISTTime() {
   const utcDate = new Date();
 
@@ -46,7 +51,7 @@ function getISTTime() {
   });
 }
 
-// 4. Append function
+// Append function
 async function appendToSheet(data) {
   try {
     const authClient = await auth.getClient();
@@ -64,6 +69,8 @@ async function appendToSheet(data) {
     console.error(" Sheet error:", err.message);
   }
 }
+
+//READ data from sheet
 async function getFromSheet() {
   try {
     await auth.getClient();
@@ -78,39 +85,14 @@ async function getFromSheet() {
   }
 }
 app.get("/", async (req, res) => {
+  //value simulation
   const rondom = Math.floor(Math.random() * 9);
   nextRondom += rondom;
-
   if (nextRondom > 100) {
     nextRondom = 0; // Reset the counter if it exceeds 100
     console.log("Resetting nextRondom to 0");
   }
-  await appendToSheet(nextRondom);
-  await getFromSheet();
-  let simplified = sheetData.filter(
-    (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
-  );
-  if (simplified.length > 50) {
-    simplified = simplified.slice(-50).reverse();
-  }
-  let ChartData = sheetData.slice(-3600);
-  console.log("Sheet data:", simplified);
-  // Store the current value in history
-  if (nextRondom % 50 == 0 && nextRondom != 0) {
-    history = {
-      ...history,
-      [new Date().toISOString()]: nextRondom,
-    };
-    console.log(history);
-  }
-
-  // Limit the history to the last 50 entries
-  if (Object.keys(history).length > 50) {
-    const oldestKey = Object.keys(history)[0];
-    delete history[oldestKey];
-  }
-
-  //send notification if value is high
+   //simulate send notification if value is high
   if (nextRondom > 50) {
     console.log("High rate detected:", nextRondom);
     sendPushNotification(
@@ -119,6 +101,17 @@ app.get("/", async (req, res) => {
       `Your bag filled 50%  `
     );
   }
+  await appendToSheet(nextRondom);
+
+  await getFromSheet();
+  //filter and simplify the data
+  let simplified = sheetData.filter(
+    (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
+  );
+  if (simplified.length > 50) {
+    simplified = simplified.slice(-50).reverse();
+  }
+  console.log("Sheet data:", simplified);
 
   // respond
   res.json({
@@ -135,6 +128,50 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/post", (req, res) => {
+  value  = req.body;
+  appendToSheet(value);
+
+  if (value== 0 ){
+    isWarning1ThresholdSended = false;
+    isWarning2ThresholdSended = false;
+    isWarning3ThresholdSended = false;
+    isAlertThresholdSended = false; // Reset all notification flags when value is 0
+  }
+  // Check thresholds and send notifications
+  if(value > warning1Threshold && value <= warning2Threshold && !isWarning1ThresholdSended)  {
+    sendPushNotification(
+      process.env.FCM_TOKEN,
+      "Warning",
+      `Your bag filled ${value} ml`
+    );
+    isWarning1ThresholdSended = true; // Set the flag to true after sending the notification
+  }
+  else if(value > warning2Threshold && value <= warning3Threshold && !isWarning2ThresholdSended) {
+    sendPushNotification(
+      process.env.FCM_TOKEN,
+      "Warning",
+      `Your bag filled ${value} ml`
+    );
+    isWarning2ThresholdSended = true; // Set the flag to true after sending the notification
+  }
+  else if(value > warning3Threshold && value <= alertThreshold && !isWarning3ThresholdSended) {
+    sendPushNotification(
+      process.env.FCM_TOKEN,
+      "Warning",
+      `Your bag filled ${value} ml`
+    );
+    isWarning3ThresholdSended = true; // Set the flag to true after sending the notification
+  }
+  else if(value > alertThreshold &&  !isAlertThresholdSended) {
+    sendPushNotification(
+      process.env.FCM_TOKEN,
+      "Alert",
+      `Your bag filled ${value} ml`
+    );
+    isAlertThresholdSended = true; // Set the flag to true after sending the notification
+  }
+
+  // Log the received data
   console.log(`Received data: ${JSON.stringify(req.body)}`);
   res.json({
     receivedData: req.body,
