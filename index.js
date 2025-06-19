@@ -6,15 +6,17 @@ const path = require("path");
 require("dotenv").config();
 const sendPushNotification = require("./sendNotification.js");
 const { google } = require("googleapis");
-
-
+const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+dayjs.extend(customParseFormat);
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 let nextRondom = 0;
 let sheetData = [];
-let ChartData = [];let value;
+let ChartData = [];
+let value;
 const warning1Threshold = 500;
 const warning2Threshold = 1000;
 const warning3Threshold = 1500;
@@ -93,7 +95,7 @@ app.get("/", async (req, res) => {
     nextRondom = 0; // Reset the counter if it exceeds 100
     console.log("Resetting nextRondom to 0");
   }
-   //simulate send notification if value is high
+  //simulate send notification if value is high
   if (nextRondom > 50) {
     console.log("High rate detected:", nextRondom);
     sendPushNotification(
@@ -123,48 +125,58 @@ app.get("/", async (req, res) => {
       value: Number(value),
     })),
     ChartData: ChartData.map(([time, value]) => ({
-      time,
+      time: dayjs(time, "DD MMM YYYY, hh:mm:ss a").toLocaleString(),
+
       value: Number(value),
     })), // Reverse the history to show the latest values first
   });
 });
 
 app.post("/post", (req, res) => {
-  value  = req.body;
+  value = req.body;
   appendToSheet(value);
 
-  if (value== 0 ){
+  if (value == 0) {
     isWarning1ThresholdSended = false;
     isWarning2ThresholdSended = false;
     isWarning3ThresholdSended = false;
     isAlertThresholdSended = false; // Reset all notification flags when value is 0
   }
   // Check thresholds and send notifications
-  if(value > warning1Threshold && value <= warning2Threshold && !isWarning1ThresholdSended)  {
+  if (
+    value > warning1Threshold &&
+    value <= warning2Threshold &&
+    !isWarning1ThresholdSended
+  ) {
     sendPushNotification(
       process.env.FCM_TOKEN,
       "Warning",
       `Your bag filled ${value} ml`
     );
     isWarning1ThresholdSended = true; // Set the flag to true after sending the notification
-  }
-  else if(value > warning2Threshold && value <= warning3Threshold && !isWarning2ThresholdSended) {
+  } else if (
+    value > warning2Threshold &&
+    value <= warning3Threshold &&
+    !isWarning2ThresholdSended
+  ) {
     sendPushNotification(
       process.env.FCM_TOKEN,
       "Warning",
       `Your bag filled ${value} ml`
     );
     isWarning2ThresholdSended = true; // Set the flag to true after sending the notification
-  }
-  else if(value > warning3Threshold && value <= alertThreshold && !isWarning3ThresholdSended) {
+  } else if (
+    value > warning3Threshold &&
+    value <= alertThreshold &&
+    !isWarning3ThresholdSended
+  ) {
     sendPushNotification(
       process.env.FCM_TOKEN,
       "Warning",
       `Your bag filled ${value} ml`
     );
     isWarning3ThresholdSended = true; // Set the flag to true after sending the notification
-  }
-  else if(value > alertThreshold &&  !isAlertThresholdSended) {
+  } else if (value > alertThreshold && !isAlertThresholdSended) {
     sendPushNotification(
       process.env.FCM_TOKEN,
       "Alert",
