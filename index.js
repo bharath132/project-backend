@@ -6,8 +6,8 @@ const path = require("path");
 require("dotenv").config();
 const sendPushNotification = require("./sendNotification.js");
 const { google } = require("googleapis");
-const dayjs = require('dayjs');
-const customParseFormat = require('dayjs/plugin/customParseFormat');
+const dayjs = require("dayjs");
+const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 const app = express();
 app.use(express.json());
@@ -125,8 +125,7 @@ app.get("/", async (req, res) => {
       value: Number(value),
     })),
     ChartData: ChartData.map(([time, value]) => ({
-      time: dayjs(time, "DD MMM YYYY, hh:mm:ss a").toLocaleString(),
-
+      time: new Date(time).toISOString(),
       value: Number(value),
     })), // Reverse the history to show the latest values first
   });
