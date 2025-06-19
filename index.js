@@ -13,7 +13,7 @@ app.use(cors());
 let nextRondom = 0;
 let history = {};
 let sheetData = [];
-
+let ChartData = [];
 const os = require("os");
 
 // 1. Decode credentials
@@ -90,9 +90,10 @@ app.get("/", async (req, res) => {
   let simplified = sheetData.filter(
     (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
   );
-if (simplified.length > 50) {
-  simplified = simplified.slice(-50).reverse();
-}
+  if (simplified.length > 50) {
+    simplified = simplified.slice(-50).reverse();
+  }
+  let ChartData = sheetData.slice(-3600);
   console.log("Sheet data:", simplified);
   // Store the current value in history
   if (nextRondom % 50 == 0 && nextRondom != 0) {
@@ -123,6 +124,10 @@ if (simplified.length > 50) {
   res.json({
     userValue: `${nextRondom}`,
     history: simplified.map(([time, value]) => ({
+      time,
+      value: Number(value),
+    })),
+    ChartData: ChartData.map(([time, value]) => ({
       time,
       value: Number(value),
     })), // Reverse the history to show the latest values first
