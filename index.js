@@ -125,7 +125,8 @@ app.get("/", async (req, res) => {
       value: Number(value),
     })),
     ChartData: ChartData.map(([time, value]) => ({
-      time: new Date(time).toISOString(),
+      time: new Date(time).toLocaleString("sv-SE")
+  .replace(" ", "T"),
       value: Number(value),
     })), // Reverse the history to show the latest values first
   });
