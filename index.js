@@ -88,15 +88,15 @@ async function getFromSheet() {
   }
 }
 
+setInterval(() => {
+   if( nextRondom > 2000) {
+     nextRondom = 0; // Reset if value exceeds 2000
+   }
+   nextRondom = nextRondom + 10;
+ }, 1000);
 app.get("/", async (req, res) => {
 
   //value simulation
- setInterval(() => {
-    if( nextRondom > 2000) {
-      nextRondom = 0; // Reset if value exceeds 2000
-    }
-    nextRondom = nextRondom + 10;
-  }, 1000);
 
   //simulate send notification if value is high
   if (nextRondom > 50) {
