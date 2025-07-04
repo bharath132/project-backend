@@ -89,7 +89,7 @@ async function getFromSheet() {
 }
 app.get("/", async (req, res) => {
   //value simulation
-  const rondom = Math.floor(Math.random() * 9);
+  const rondom = Math.floor(Math.random() * 9) + 1;
   nextRondom += rondom;
   if (nextRondom > 2000) {
     nextRondom = 0; // Reset the counter if it exceeds 100
