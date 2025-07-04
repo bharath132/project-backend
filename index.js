@@ -87,19 +87,16 @@ async function getFromSheet() {
     console.error("Error fetching data from sheet:", err.message);
   }
 }
-let lastUpdateTime = 0;
+
 app.get("/", async (req, res) => {
-  const now = Date.now();
+
   //value simulation
-  if (now - lastUpdateTime >= 1000) {
-    const rondom = Math.floor(Math.random() * 9) + 1;
-    nextRondom += rondom;
-
-    if (nextRondom > 2000) nextRondom = 0;
-
-    await appendToSheet(nextRondom);
-    lastUpdateTime = now;
-  }
+ setInterval(() => {
+    if( nextRondom > 2000) {
+      nextRondom = 0; // Reset if value exceeds 2000
+    }
+    nextRondom = nextRondom + 10;
+  }, 1000);
 
   //simulate send notification if value is high
   if (nextRondom > 50) {
