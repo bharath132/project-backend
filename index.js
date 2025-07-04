@@ -88,11 +88,12 @@ async function getFromSheet() {
   }
 }
 
-setInterval(() => {
+setInterval(async () => {
    if( nextRondom > 2000) {
      nextRondom = 0; // Reset if value exceeds 2000
    }
    nextRondom = nextRondom + 10;
+     await appendToSheet(nextRondom);
  }, 1000);
 app.get("/", async (req, res) => {
 
@@ -107,7 +108,7 @@ app.get("/", async (req, res) => {
       `Your bag filled 50%  `
     );
   }
-  await appendToSheet(nextRondom);
+
 
   await getFromSheet();
   //filter and simplify the data
@@ -137,7 +138,7 @@ app.get("/", async (req, res) => {
 
 app.post("/post", (req, res) => {
   value = req.body;
-  appendToSheet(value);
+
 
   if (value == 0) {
     isWarning1ThresholdSended = false;
