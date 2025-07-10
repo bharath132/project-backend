@@ -115,12 +115,12 @@ async function getFromSheet() {
 }
 
 setInterval(async () => {
-   if( nextRondom > 2000) {
-     nextRondom = 0; // Reset if value exceeds 2000
-   }
-   nextRondom = nextRondom + 10;
-     await appendToSheet(nextRondom);
- }, 1000);
+  if (nextRondom > 2000) {
+    nextRondom = 0; // Reset if value exceeds 2000
+  }
+  nextRondom = nextRondom + 10;
+  await appendToSheet(nextRondom);
+}, 1000);
 app.get("/", async (req, res) => {
 
   //value simulation
@@ -146,7 +146,7 @@ app.get("/", async (req, res) => {
   }
   ChartData = sheetData.slice(-3600);
   console.log("Sheet data:", simplified);
-// const reducedData = downsampleTo10Seconds(ChartData);
+  // const reducedData = downsampleTo10Seconds(ChartData);
   // respond
   res.json({
     userValue: `${nextRondom}`,
@@ -158,15 +158,16 @@ app.get("/", async (req, res) => {
     ChartData: ChartData.map(([time, value]) => ({
       time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
       value: Number(value)
-    }))});
+    }))
   });
+});
 app.get("/live", async (req, res) => {
   await getFromSheet();
   //filter and simplify the data
   let simplified = sheetData.filter(
     (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
   );
-   if (simplified.length > 50) {
+  if (simplified.length > 50) {
     simplified = simplified.slice(-50).reverse();
   }
   // Get the last 1 entries for ChartData
@@ -177,10 +178,14 @@ app.get("/live", async (req, res) => {
       time,
       value: Number(value),
     })),
-    ChartData: ChartData.map((entry) => ({
-  time: new Date(entry.time).toLocaleString("sv-SE").replace(" ", "T"),
-  value: Number(entry.value)
-    }))
+    ChartData: ChartData.map((entry) => {
+      const time = new Date(entry.time);
+      return {
+        time: time.toISOString().split('.')[0], // Ensures format: "YYYY-MM-DDTHH:mm:ss"
+        value: Number(entry.value),
+      };
+    })
+
   });
 });
 app.post("/post", (req, res) => {
