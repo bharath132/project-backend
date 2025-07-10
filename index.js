@@ -38,6 +38,24 @@ const auth = new google.auth.GoogleAuth({
   keyFile: tempPath, //  Use the temp path
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
+function downsampleTo10Seconds(data) {
+  const result = [];
+
+  for (let i = 0; i < data.length; i += 10) {
+    const group = data.slice(i, i + 10);
+
+    // Ensure values are numeric and parse timestamp
+    const numericValues = group.map(d => Number(d[1])).filter(v => !isNaN(v));
+    if (numericValues.length === 0) continue;
+
+    const avg = numericValues.reduce((a, b) => a + b, 0) / numericValues.length;
+    const timestamp = group[group.length - 1][0]; // latest timestamp in group
+
+    result.push({ time: timestamp, value: Math.round(avg) });
+  }
+
+  return result;
+}
 
 //IST time
 function getISTTime() {
@@ -120,7 +138,7 @@ app.get("/", async (req, res) => {
   }
   ChartData = sheetData.slice(-3600);
   console.log("Sheet data:", simplified);
-
+const reducedData = downsampleTo10Seconds(ChartData);
   // respond
   res.json({
     userValue: `${nextRondom}`,
@@ -128,11 +146,7 @@ app.get("/", async (req, res) => {
       time,
       value: Number(value),
     })),
-    ChartData: ChartData.map(([time, value]) => ({
-      time: new Date(time).toLocaleString("sv-SE")
-  .replace(" ", "T"),
-      value: Number(value),
-    })), // Reverse the history to show the latest values first
+    ChartData: reducedData,
   });
 });
 
