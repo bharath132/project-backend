@@ -87,7 +87,16 @@ async function getFromSheet() {
     console.error("Error fetching data from sheet:", err.message);
   }
 }
-
+function downsampleTo10Seconds(data) {
+  const result = [];
+  for (let i = 0; i < data.length; i += 10) {
+    const group = data.slice(i, i + 10);
+    const sum = group.reduce((a, b) => a + b, 0);
+    const avg = sum / group.length;
+    result.push(avg);
+  }
+  return result;
+}
 setInterval(async () => {
    if( nextRondom > 2000) {
      nextRondom = 0; // Reset if value exceeds 2000
@@ -120,7 +129,7 @@ app.get("/", async (req, res) => {
   }
   ChartData = sheetData.slice(-3600);
   console.log("Sheet data:", simplified);
-
+const reducedData = downsampleTo10Seconds(ChartData);
   // respond
   res.json({
     userValue: `${nextRondom}`,
@@ -128,8 +137,8 @@ app.get("/", async (req, res) => {
       time,
       value: Number(value),
     })),
-    ChartData: ChartData.map(([time, value]) => ({
-      time: new Date(time).toLocaleString("sv-SE")
+    ChartData: reducedData.map((value) => ({
+      time: new Date(value.time).toLocaleString("sv-SE")
   .replace(" ", "T"),
       value: Number(value),
     })), // Reverse the history to show the latest values first
