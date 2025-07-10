@@ -177,10 +177,10 @@ app.get("/live", async (req, res) => {
       time,
       value: Number(value),
     })),
-   ChartData: ChartData.map((entry) => ({
+    ChartData: ChartData.map((entry) => ({
   time: new Date(entry.time).toLocaleString("sv-SE").replace(" ", "T"),
   value: Number(entry.value)
-}));
+    }))
   });
 });
 app.post("/post", (req, res) => {
