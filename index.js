@@ -162,12 +162,25 @@ app.get("/", async (req, res) => {
   });
 app.get("/live", async (req, res) => {
   await getFromSheet();
+  //filter and simplify the data
+  let simplified = sheetData.filter(
+    (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
+  );
+   if (simplified.length > 50) {
+    simplified = simplified.slice(-50).reverse();
+  }
+
+    ChartData = sheetData.slice(-1);
   res.json({
     userValue: `${nextRondom}`,
-    history: sheetData.map(([time, value]) => ({
+    history: simplified.map(([time, value]) => ({
       time,
       value: Number(value),
     })),
+    ChartData: ChartData.map(([time, value]) => ({
+      time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
+      value: Number(value)
+    }))
   });
 });
 app.post("/post", (req, res) => {
