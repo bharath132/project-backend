@@ -40,30 +40,30 @@ const auth = new google.auth.GoogleAuth({
 });
 
 
-function downsampleTo10Seconds(data) {
-  const result = [];
+// function downsampleTo10Seconds(data) {
+//   const result = [];
 
-  for (let i = 0; i < data.length; i += 10) {
-    const group = data.slice(i, i + 10);
+//   for (let i = 0; i < data.length; i += 10) {
+//     const group = data.slice(i, i + 10);
 
-    // Extract numeric values
-    const values = group.map(d => Number(d[1])).filter(v => !isNaN(v));
-    if (values.length === 0) continue;
+//     // Extract numeric values
+//     const values = group.map(d => Number(d[1])).filter(v => !isNaN(v));
+//     if (values.length === 0) continue;
 
-    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+//     const avg = values.reduce((a, b) => a + b, 0) / values.length;
 
-    // Use the last timestamp in the group
-    const rawTime = group[group.length - 1][0];
-    const formattedTime = dayjs(rawTime).format("YYYY-MM-DDTHH:mm:ss");
+//     // Use the last timestamp in the group
+//     const rawTime = group[group.length - 1][0];
+//     const formattedTime = dayjs(rawTime).format("YYYY-MM-DDTHH:mm:ss");
 
-    result.push({
-      time: formattedTime,
-      value: Math.round(avg), // rounded for cleaner display
-    });
-  }
+//     result.push({
+//       time: formattedTime,
+//       value: Math.round(avg), // rounded for cleaner display
+//     });
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
 //IST time
 function getISTTime() {
@@ -146,7 +146,7 @@ app.get("/", async (req, res) => {
   }
   ChartData = sheetData.slice(-3600);
   console.log("Sheet data:", simplified);
-const reducedData = downsampleTo10Seconds(ChartData);
+// const reducedData = downsampleTo10Seconds(ChartData);
   // respond
   res.json({
     userValue: `${nextRondom}`,
@@ -154,10 +154,22 @@ const reducedData = downsampleTo10Seconds(ChartData);
       time,
       value: Number(value),
     })),
-    ChartData: reducedData,
+    // ChartData: reducedData,
+    ChartData: ChartData.map(([time, value]) => ({
+      time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
+      value: Number(value)
+    }))});
+  });
+app.get("/live", async (req, res) => {
+  await getFromSheet();
+  res.json({
+    userValue: `${nextRondom}`,
+    history: sheetData.map(([time, value]) => ({
+      time,
+      value: Number(value),
+    })),
   });
 });
-
 app.post("/post", (req, res) => {
   value = req.body;
 
