@@ -169,18 +169,18 @@ app.get("/live", async (req, res) => {
    if (simplified.length > 50) {
     simplified = simplified.slice(-50).reverse();
   }
-
-    ChartData = sheetData.slice(-1);
+  // Get the last 1 entries for ChartData
+  ChartData = sheetData.slice(-1);
   res.json({
     userValue: `${nextRondom}`,
     history: simplified.map(([time, value]) => ({
       time,
       value: Number(value),
     })),
-    ChartData: ChartData.map(([time, value]) => ({
-      time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
-      value: Number(value)
-    }))
+   ChartData: ChartData.map((entry) => ({
+  time: new Date(entry.time).toLocaleString("sv-SE").replace(" ", "T"),
+  value: Number(entry.value)
+}));
   });
 });
 app.post("/post", (req, res) => {
