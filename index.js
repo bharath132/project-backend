@@ -137,8 +137,8 @@ const reducedData = downsampleTo10Seconds(ChartData);
       time,
       value: Number(value),
     })),
-    ChartData: reducedData.map((value) => ({
-      time: new Date(value.time).toLocaleString("sv-SE")
+    ChartData: reducedData.map(([time, value]) => ({
+      time: new Date(time).toLocaleString("sv-SE")
   .replace(" ", "T"),
       value: Number(value),
     })), // Reverse the history to show the latest values first
