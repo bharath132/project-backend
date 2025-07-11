@@ -167,8 +167,8 @@ app.get("/live", async (req, res) => {
   let simplified = sheetData.filter(
     (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
   );
-  if (simplified.length > 50) {
-    simplified = simplified.slice(-50).reverse();
+  if (simplified.length > 25) {
+    simplified = simplified.slice(-25).reverse();
   }
   // Get the last 1 entries for ChartData
   ChartData = sheetData.slice(-1);
