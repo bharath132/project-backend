@@ -43,8 +43,8 @@ const auth = new google.auth.GoogleAuth({
 function downsampleTo10Seconds(data) {
   const result = [];
 
-  for (let i = 0; i < data.length; i += 2) {
-    const group = data.slice(i, i + 2);
+  for (let i = 0; i < data.length; i += 3) {
+    const group = data.slice(i, i + 3);
 
     // Extract numeric values
     const values = group.map(d => Number(d[1])).filter(v => !isNaN(v));
