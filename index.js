@@ -38,8 +38,8 @@ const auth = new google.auth.GoogleAuth({
   keyFile: tempPath, //  Use the temp path
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
-const getFullData = require("./routes/fulldata.js");
-app.use("/api", getFullData);
+const FullData = require("./routes/fulldata.js");
+app.use("/api", FullData);
 
 function downsampleTo10Seconds(data) {
   const result = [];
@@ -248,3 +248,4 @@ app.post("/post", (req, res) => {
 app.listen(3000, "0.0.0.0", () => {
   console.log("Server is running on http://0.0.0.0:3000");
 });
+
