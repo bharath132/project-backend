@@ -4,7 +4,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 require("dotenv").config();
-const sendPushNotification = require("./sendNotification.js");
+const sendPushNotification = require("./services/notificationService.js");
 const { google } = require("googleapis");
 const dayjs = require("dayjs");
 const customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -100,93 +100,8 @@ async function appendToSheet(data) {
   }
 }
 
-//READ data from sheet
-async function getFromSheet() {
-  try {
-    await auth.getClient();
-    const sheets = google.sheets({ version: "v4", auth });
-    const respond = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: "Sheet1!A:B",
-    });
-    sheetData = respond.data.values;
-  } catch (err) {
-    console.error("Error fetching data from sheet:", err.message);
-  }
-}
-
-setInterval(async () => {
-  if (nextRondom > 2000) {
-    nextRondom = 0; // Reset if value exceeds 2000
-  }
-  nextRondom = nextRondom + 10;
-  await appendToSheet(nextRondom);
-}, 1000);
-app.get("/", async (req, res) => {
-
-  //value simulation
-
-  //simulate send notification if value is high
-  if (nextRondom > 50) {
-    console.log("High rate detected:", nextRondom);
-    sendPushNotification(
-      process.env.FCM_TOKEN,
-      "Alert",
-      `Your bag filled 50%  `
-    );
-  }
-
-
-  await getFromSheet();
-  //filter and simplify the data
-  let simplified = sheetData.filter(
-    (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
-  );
-  if (simplified.length > 50) {
-    simplified = simplified.slice(-50).reverse();
-  }
-  ChartData = sheetData.slice(-3600);
-  console.log("Sheet data:", simplified);
-  const reducedData = downsampleTo10Seconds(ChartData);
-  // respond
-  res.json({
-    userValue: `${nextRondom}`,
-    history: simplified.map(([time, value]) => ({
-      time,
-      value: Number(value),
-    })),
-    ChartData: reducedData,
-    // ChartData: ChartData.map(([time, value]) => ({
-    //   time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
-    //   value: Number(value)
-    // }))
-  });
-});
-app.get("/live", async (req, res) => {
-  await getFromSheet();
-  //filter and simplify the data
-  let simplified = sheetData.filter(
-    (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
-  );
-  if (simplified.length > 25) {
-    simplified = simplified.slice(-25).reverse();
-  }
-  // Get the last 1 entries for ChartData
-  ChartData = sheetData.slice(-1);
-  res.json({
-    userValue: `${nextRondom}`,
-    history: simplified.map(([time, value]) => ({
-      time,
-      value: Number(value),
-    })),
-    ChartData: ChartData.map(([time, value]) => ({
-      time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
-      value: Number(value)
-    }))
-  });
-});
 app.post("/post", (req, res) => {
-  value = req.body;
+  const { value } = req.body;
 
 
   if (value == 0) {
@@ -237,7 +152,8 @@ app.post("/post", (req, res) => {
     );
     isAlertThresholdSended = true; // Set the flag to true after sending the notification
   }
-
+  // Append the value to the Google Sheet
+  appendToSheet(value);
   // Log the received data
   console.log(`Received data: ${JSON.stringify(req.body)}`);
   res.json({
