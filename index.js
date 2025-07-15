@@ -100,6 +100,29 @@ async function appendToSheet(data) {
   }
 }
 
+//READ data from sheet
+async function getFromSheet() {
+  try {
+    await auth.getClient();
+    const sheets = google.sheets({ version: "v4", auth });
+    const respond = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: "Sheet1!A:B",
+    });
+    sheetData = respond.data.values;
+  } catch (err) {
+    console.error("Error fetching data from sheet:", err.message);
+  }
+}
+
+setInterval(async () => {
+  if (nextRondom > 2000) {
+    nextRondom = 0; // Reset if value exceeds 2000
+  }
+  nextRondom = nextRondom + 10;
+  await appendToSheet(nextRondom);
+}, 1000);
+
 app.post("/post", (req, res) => {
   const { value } = req.body;
 
