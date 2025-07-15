@@ -1,4 +1,5 @@
-
+const { google } = require("googleapis");
+const { auth } = require("../config/googleAuth.js");
 const sendPushNotification = require("../services/notificationService.js");
 const { getFromSheet } = require("../services/sheetService.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
@@ -8,9 +9,47 @@ const credentialsJson = Buffer.from(
   process.env.GOOGLE_CREDENTIALS_BASE64,
   "base64"
 ).toString("utf-8");
+let nextRondom = 0;
+function getISTTime() {
+  const utcDate = new Date();
 
+  return utcDate.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "numeric",
+  });
+}
 
-const nextRondom = Math.floor(Math.random() * 100); // Simulated value for demonstration
+async function appendToSheet(data) {
+  try {
+    const authClient = await auth.getClient();
+    const sheets = google.sheets({ version: "v4", auth: authClient });
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: "Sheet1!A:B",
+      valueInputOption: "RAW",
+      resource: {
+        values: [[getISTTime(), data]],
+      },
+    });
+    console.log(" Appended to sheet:", data);
+  } catch (err) {
+    console.error(" Sheet error:", err.message);
+  }
+}
+
+setInterval(async () => {
+  if (nextRondom > 2000) {
+    nextRondom = 0; // Reset if value exceeds 2000
+  }
+  nextRondom = nextRondom + 10;
+  await appendToSheet(nextRondom);
+}, 1000);
+ // Simulated value for demonstration
 exports.getFullData = async (req, res) => {
 
   //value simulation

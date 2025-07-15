@@ -115,13 +115,6 @@ async function getFromSheet() {
   }
 }
 
-setInterval(async () => {
-  if (nextRondom > 2000) {
-    nextRondom = 0; // Reset if value exceeds 2000
-  }
-  nextRondom = nextRondom + 10;
-  await appendToSheet(nextRondom);
-}, 1000);
 
 app.post("/post", (req, res) => {
   const { value } = req.body;
