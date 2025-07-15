@@ -100,20 +100,6 @@ async function appendToSheet(data) {
   }
 }
 
-//READ data from sheet
-async function getFromSheet() {
-  try {
-    await auth.getClient();
-    const sheets = google.sheets({ version: "v4", auth });
-    const respond = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: "Sheet1!A:B",
-    });
-    sheetData = respond.data.values;
-  } catch (err) {
-    console.error("Error fetching data from sheet:", err.message);
-  }
-}
 
 
 app.post("/post", (req, res) => {
