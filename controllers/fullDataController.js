@@ -3,7 +3,7 @@ const { auth } = require("../config/googleAuth.js");
 const sendPushNotification = require("../services/notificationService.js");
 const { getFromSheet, appendToSheet} = require("../services/sheetService.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
-
+let nextRondom = 0;
 setInterval(async () => {
   if (nextRondom > 2000) {
     nextRondom = 0; // Reset if value exceeds 2000
@@ -13,9 +13,6 @@ setInterval(async () => {
 }, 1000);
  // Simulated value for demonstration
 exports.getFullData = async (req, res) => {
-
-  //value simulation
-
   //simulate send notification if value is high
   if (nextRondom > 50) {
     console.log("High rate detected:", nextRondom);
@@ -25,8 +22,6 @@ exports.getFullData = async (req, res) => {
       `Your bag filled 50%  `
     );
   }
-
-
   await getFromSheet();
   //filter and simplify the data
   let simplified = sheetData.filter(
@@ -52,7 +47,6 @@ exports.getFullData = async (req, res) => {
     // }))
   });
 }
-
 exports.getLiveData = async (req, res) => {
   await getFromSheet();
   //filter and simplify the data
