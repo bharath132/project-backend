@@ -1,46 +1,8 @@
 const { google } = require("googleapis");
 const { auth } = require("../config/googleAuth.js");
 const sendPushNotification = require("../services/notificationService.js");
-const { getFromSheet } = require("../services/sheetService.js");
+const { getFromSheet, appendToSheet} = require("../services/sheetService.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
-const spreadsheetId = process.env.GOOGLE_SPREADSHEET_ID;
-//Decode credentials
-const credentialsJson = Buffer.from(
-  process.env.GOOGLE_CREDENTIALS_BASE64,
-  "base64"
-).toString("utf-8");
-let nextRondom = 0;
-function getISTTime() {
-  const utcDate = new Date();
-
-  return utcDate.toLocaleString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "numeric",
-  });
-}
-
-async function appendToSheet(data) {
-  try {
-    const authClient = await auth.getClient();
-    const sheets = google.sheets({ version: "v4", auth: authClient });
-    await sheets.spreadsheets.values.append({
-      spreadsheetId,
-      range: "Sheet1!A:B",
-      valueInputOption: "RAW",
-      resource: {
-        values: [[getISTTime(), data]],
-      },
-    });
-    console.log(" Appended to sheet:", data);
-  } catch (err) {
-    console.error(" Sheet error:", err.message);
-  }
-}
 
 setInterval(async () => {
   if (nextRondom > 2000) {
