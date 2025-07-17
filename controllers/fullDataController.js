@@ -3,9 +3,10 @@ const sendPushNotification = require("../services/notificationService.js");
 const { getFromSheet, appendToSheet} = require("../services/sheetService.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
 exports.getFullData = async (req, res) => {
+  const latestValue = getLatestValue();
   //simulate send notification if value is high
-  if (nextRondom > 50) {
-    console.log("High rate detected:", nextRondom);
+  if (latestValue > 50) {
+    console.log("High rate detected:", latestValue);
     sendPushNotification(
       process.env.FCM_TOKEN,
       "Alert",
@@ -25,7 +26,7 @@ exports.getFullData = async (req, res) => {
   const reducedData = downsampleTo10Seconds(ChartData);
   // respond
   res.json({
-    userValue: `${nextRondom}`,
+    userValue: `${latestValue}`,
     history: simplified.map(([time, value]) => ({
       time,
       value: Number(value),

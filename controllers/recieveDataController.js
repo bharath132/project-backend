@@ -1,5 +1,6 @@
 const { appendToSheet } = require("../services/sheetService.js");
 const sendPushNotification = require("../services/notificationService.js");
+const { setLatestValue } = require("../utils/sharedData.js");
 
 let isWarning1ThresholdSended = false;
   let isWarning2ThresholdSended = false;
@@ -10,8 +11,8 @@ let warning2Threshold = 100;
 let warning3Threshold = 150;
 let alertThreshold = 200;
 exports.receiveData = (req,res)=> {
-  const { value } = req.body;
-
+    const { value } = req.body;
+    setLatestValue(value);
 
   if (value == 0) {
     isWarning1ThresholdSended = false;
