@@ -38,7 +38,7 @@ const auth = new google.auth.GoogleAuth({
   keyFile: tempPath, //  Use the temp path
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
-const FullData = require("./routes/fulldata.js");
+const FullData = require("./routes/routes.js");
 app.use("/api", FullData);
 
 function downsampleTo10Seconds(data) {
