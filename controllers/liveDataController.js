@@ -1,5 +1,7 @@
 const { getFromSheet} = require("../services/sheetService.js");
+const { getLatestValue } = require("../utils/sharedData.js");
 exports.getLiveData = async (req, res) => {
+    const latestValue = getLatestValue();
   await getFromSheet();
   //filter and simplify the data
   let simplified = sheetData.filter(
@@ -11,7 +13,7 @@ exports.getLiveData = async (req, res) => {
   // Get the last 1 entries for ChartData
   ChartData = sheetData.slice(-1);
   res.json({
-    userValue: `${nextRondom}`,
+    userValue: `${latestValue}`,
     history: simplified.map(([time, value]) => ({
       time,
       value: Number(value),
