@@ -2,6 +2,7 @@
 const sendPushNotification = require("../services/notificationService.js");
 const { getFromSheet, appendToSheet} = require("../services/sheetService.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
+const { getLatestValue } = require("../utils/sharedData.js");
 exports.getFullData = async (req, res) => {
   const latestValue = getLatestValue();
   //simulate send notification if value is high
