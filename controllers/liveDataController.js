@@ -10,13 +10,15 @@ exports.getLiveData = async (req, res) => {
   let simplified = sheetData.filter(
     (data) => Number(data[1]) !== 0 && Number(data[1]) % 50 === 0
   );
+  const ChartData2 = simplified
   if (simplified.length > 25) {
     simplified = simplified.slice(-25).reverse();
   }
+
 const ONE_HOUR = 60 * 60 * 1000;
 const oneHourAgoUTC = Date.now() - ONE_HOUR;
 
-const oneHourData = simplified.filter(([timestamp, value]) => {
+const oneHourData = ChartData2.filter(([timestamp, value]) => {
   // Convert IST to UTC by subtracting 5.5 hours (19800 seconds = 19800000 ms)
   const istDate = new Date(timestamp);
   const utcTime = istDate.getTime() - 5.5 * 60 * 60 * 1000;
