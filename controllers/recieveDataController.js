@@ -3,16 +3,16 @@ const sendPushNotification = require("../services/notificationService.js");
 const { setLatestValue } = require("../utils/sharedData.js");
 
 let isWarning1ThresholdSended = false;
-  let isWarning2ThresholdSended = false;
-  let isWarning3ThresholdSended = false;
-  let isAlertThresholdSended = false;
+let isWarning2ThresholdSended = false;
+let isWarning3ThresholdSended = false;
+let isAlertThresholdSended = false;
 let warning1Threshold = 50;
 let warning2Threshold = 100;
 let warning3Threshold = 150;
 let alertThreshold = 200;
-exports.receiveData = (req,res)=> {
-    const { value } = req.body;
-    setLatestValue(value);
+exports.receiveData = (req, res) => {
+  const { value } = req.body;
+  setLatestValue(value);
 
   if (value == 0) {
     isWarning1ThresholdSended = false;
@@ -69,4 +69,4 @@ exports.receiveData = (req,res)=> {
   res.json({
     receivedData: req.body,
   });
-}
+};

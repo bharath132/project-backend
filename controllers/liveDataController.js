@@ -1,7 +1,7 @@
-const { getFromSheet} = require("../services/sheetService.js");
+const { getFromSheet } = require("../services/sheetService.js");
 const { getLatestValue } = require("../utils/sharedData.js");
 exports.getLiveData = async (req, res) => {
-    const latestValue = getLatestValue();
+  const latestValue = getLatestValue();
   await getFromSheet();
   //filter and simplify the data
   let simplified = sheetData.filter(
@@ -20,7 +20,7 @@ exports.getLiveData = async (req, res) => {
     })),
     ChartData: ChartData.map(([time, value]) => ({
       time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
-      value: Number(value)
-    }))
+      value: Number(value),
+    })),
   });
-}
+};

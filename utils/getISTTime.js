@@ -1,4 +1,4 @@
-exports.getISTTime = function() {
+exports.getISTTime = function () {
   const utcDate = new Date();
 
   return utcDate.toLocaleString("en-IN", {
@@ -10,4 +10,4 @@ exports.getISTTime = function() {
     minute: "2-digit",
     second: "numeric",
   });
-}
+};
