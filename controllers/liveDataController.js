@@ -21,9 +21,10 @@ exports.getLiveData = async (req, res) => {
       time,
       value: Number(value),
     })),
-    ChartData: ChartData.map(([time, value]) => ({
-      time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
-      value: Number(value),
-    })),
+    // ChartData: ChartData.map(([time, value]) => ({
+    //   time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
+    //   value: Number(value),
+    // })),
+    ChartData: reducedData,
   });
 };
