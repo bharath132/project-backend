@@ -3,7 +3,7 @@ const { getLatestValue } = require("../utils/sharedData.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
 const dayjs = require("dayjs");
 exports.getLiveData = async (req, res) => {
-  let oneHourData = []
+
   const latestValue = getLatestValue();
   await getFromSheet();
   //filter and simplify the data
@@ -13,13 +13,16 @@ exports.getLiveData = async (req, res) => {
   if (simplified.length > 25) {
     simplified = simplified.slice(-25).reverse();
   }
-  const now = dayjs();
-  const oneHourAgo = now.subtract(1, "hour");
+const ONE_HOUR = 60 * 60 * 1000;
+const oneHourAgoUTC = Date.now() - ONE_HOUR;
 
-  oneHourData = simplified.filter(([time, value]) => {
-    const timestamp = dayjs(time);
-    return timestamp.isAfter(oneHourAgo) && timestamp.isBefore(now);
-  });
+const oneHourData = values.filter(([timestamp, value]) => {
+  // Convert IST to UTC by subtracting 5.5 hours (19800 seconds = 19800000 ms)
+  const istDate = new Date(timestamp);
+  const utcTime = istDate.getTime() - 5.5 * 60 * 60 * 1000;
+
+  return utcTime > oneHourAgoUTC;
+});
 
   // Get the last 3600 entries for ChartData
   ChartData = sheetData.slice(-3600);
