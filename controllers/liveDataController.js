@@ -10,17 +10,20 @@ exports.getLiveData = async (req, res) => {
   if (simplified.length > 25) {
     simplified = simplified.slice(-25).reverse();
   }
-  // Get the last 1 entries for ChartData
-  ChartData = sheetData.slice(-1);
+
+  // Get the last 3600 entries for ChartData
+  ChartData = sheetData.slice(-3600);
+    const reducedData = downsampleTo10Seconds(ChartData);
   res.json({
     userValue: `${latestValue}`,
     history: simplified.map(([time, value]) => ({
       time,
       value: Number(value),
     })),
-    ChartData: ChartData.map(([time, value]) => ({
-      time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
-      value: Number(value),
-    })),
+    // ChartData: ChartData.map(([time, value]) => ({
+    //   time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
+    //   value: Number(value),
+    // })),
+    ChartData: reducedData,
   });
 };
