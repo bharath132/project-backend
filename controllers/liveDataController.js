@@ -1,6 +1,7 @@
 const { getFromSheet } = require("../services/sheetService.js");
 const { getLatestValue } = require("../utils/sharedData.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
+const dayjs = require("dayjs");
 exports.getLiveData = async (req, res) => {
   const latestValue = getLatestValue();
   await getFromSheet();
@@ -12,12 +13,12 @@ exports.getLiveData = async (req, res) => {
     simplified = simplified.slice(-25).reverse();
   }
   const now = dayjs();
-const oneHourAgo = now.subtract(1, "hour");
+  const oneHourAgo = now.subtract(1, "hour");
 
-const oneHourData = simplified.filter(([time, value]) => {
-  const timestamp = dayjs(time);
-  return timestamp.isAfter(oneHourAgo) && timestamp.isBefore(now);
-});
+  const oneHourData = simplified.filter(([time, value]) => {
+    const timestamp = dayjs(time);
+    return timestamp.isAfter(oneHourAgo) && timestamp.isBefore(now);
+  });
 
   // Get the last 3600 entries for ChartData
   ChartData = sheetData.slice(-3600);
