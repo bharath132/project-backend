@@ -34,7 +34,7 @@ exports.getLiveData = async (req, res) => {
     //   value: Number(value),
     // })),
     ChartData: oneHourData.map(([time, value]) => ({
-      time,
+      time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
       value: Number(value),
     })),
   });
