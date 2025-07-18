@@ -3,6 +3,7 @@ const { getLatestValue } = require("../utils/sharedData.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
 const dayjs = require("dayjs");
 exports.getLiveData = async (req, res) => {
+  let oneHourData = []
   const latestValue = getLatestValue();
   await getFromSheet();
   //filter and simplify the data
@@ -15,7 +16,7 @@ exports.getLiveData = async (req, res) => {
   const now = dayjs();
   const oneHourAgo = now.subtract(1, "hour");
 
-  const oneHourData = simplified.filter(([time, value]) => {
+  oneHourData = simplified.filter(([time, value]) => {
     const timestamp = dayjs(time);
     return timestamp.isAfter(oneHourAgo) && timestamp.isBefore(now);
   });
