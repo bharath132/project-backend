@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-
+require("dotenv").config();
 // Decode base64 into a temporary JSON file
 const credentialsJson = Buffer.from(
   process.env.FIREBASE_CREDENTIALS_BASE64,

@@ -1,5 +1,6 @@
 const { getFromSheet } = require("../services/sheetService.js");
 const { getLatestValue } = require("../utils/sharedData.js");
+const downsampleTo10Seconds = require("../utils/downsample.js");
 exports.getLiveData = async (req, res) => {
   const latestValue = getLatestValue();
   await getFromSheet();
