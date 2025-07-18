@@ -16,7 +16,7 @@ exports.getLiveData = async (req, res) => {
 const ONE_HOUR = 60 * 60 * 1000;
 const oneHourAgoUTC = Date.now() - ONE_HOUR;
 
-const oneHourData = values.filter(([timestamp, value]) => {
+const oneHourData = simplified.filter(([timestamp, value]) => {
   // Convert IST to UTC by subtracting 5.5 hours (19800 seconds = 19800000 ms)
   const istDate = new Date(timestamp);
   const utcTime = istDate.getTime() - 5.5 * 60 * 60 * 1000;
