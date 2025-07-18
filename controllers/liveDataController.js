@@ -11,6 +11,13 @@ exports.getLiveData = async (req, res) => {
   if (simplified.length > 25) {
     simplified = simplified.slice(-25).reverse();
   }
+  const now = dayjs();
+const oneHourAgo = now.subtract(1, "hour");
+
+const oneHourData = simplified.filter(([time, value]) => {
+  const timestamp = dayjs(time);
+  return timestamp.isAfter(oneHourAgo) && timestamp.isBefore(now);
+});
 
   // Get the last 3600 entries for ChartData
   ChartData = sheetData.slice(-3600);
@@ -25,7 +32,7 @@ exports.getLiveData = async (req, res) => {
     //   time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
     //   value: Number(value),
     // })),
-    ChartData: simplified.map(([time, value]) => ({
+    ChartData: oneHourData.map(([time, value]) => ({
       time,
       value: Number(value),
     })),
