@@ -6,6 +6,7 @@ async function sendNotification(token, title, body) {
       notification: {
         title: title,
         body: body,
+        
       },
       token: token,
     };
