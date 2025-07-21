@@ -6,7 +6,7 @@ const { sheets } = require("googleapis/build/src/apis/sheets/index.js");
 
 exports.getLiveData = async (req, res) => {
 
-  const Value = getLatestValue();
+  const latestValue = getLatestValue();
   await getFromSheet();
   //filter and simplify the data
   let simplified = sheetData.filter(
@@ -32,7 +32,7 @@ const oneHourData = ChartData2.filter(([timestamp, value]) => {
   ChartData = sheetData.slice(-60);
   const reducedData = downsampleTo10Seconds(ChartData);
   res.json({
-    userValue: `${Value}`,
+    userValue: `${latestValue}`,
     history: simplified.map(([time, value]) => ({
       time,
       value: Number(value),
