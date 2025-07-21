@@ -3,8 +3,7 @@ const { getLatestValue } = require("../utils/sharedData.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
 const dayjs = require("dayjs");
 const { sheets } = require("googleapis/build/src/apis/sheets/index.js");
-let sheetData = [];
-let ChartData = [];
+
 exports.getLiveData = async (req, res) => {
 
   const Value = getLatestValue();
