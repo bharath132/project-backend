@@ -13,6 +13,7 @@ let alertThreshold = 2000;
 let lastLoggedMinute = null;
 let data = [];
 exports.receiveData = (req, res) => {
+<<<<<<< HEAD
  const { value } = req.body;
 const now = new Date();
 const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in ms
@@ -45,6 +46,11 @@ if (data.length > 60) {
 //   appendToSheet(value); // append only once per minute
 // }
 
+=======
+  const { value } = req.body;
+  setLatestValue(value);
+
+>>>>>>> parent of f91a988 (test)
   if (value == 0 || value > 2000) {
     isWarning1ThresholdSended = false;
     isWarning2ThresholdSended = false;
@@ -93,7 +99,10 @@ if (data.length > 60) {
     );
     isAlertThresholdSended = true; // Set the flag to true after sending the notification
   }
-
+  // Append the value to the Google Sheet
+  appendToSheet(value);
+  // Log the received data
+  console.log(`Received data: ${JSON.stringify(req.body)}`);
   res.json({
     receivedData: req.body,
   });
