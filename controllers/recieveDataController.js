@@ -10,9 +10,9 @@ let warning1Threshold = 500;
 let warning2Threshold = 1000;
 let warning3Threshold = 1500;
 let alertThreshold = 2000;
+let lastLoggedMinute = null;
 exports.receiveData = (req, res) => {
-  let lastLoggedMinute = null;
-
+  let data = [];
   const { value } = req.body;
   const now = new Date();
 
@@ -34,6 +34,9 @@ exports.receiveData = (req, res) => {
   // Only append to sheet if the minute has changed
   const currentMinute = now.getMinutes();
   if (currentMinute !== lastLoggedMinute) {
+    console.log("Current minute:", currentMinute);
+    console.log("Last logged minute:", lastLoggedMinute);
+    console.log("Append to sheet:", value);
     lastLoggedMinute = currentMinute;
     appendToSheet(value); // append only once per minute
   }
