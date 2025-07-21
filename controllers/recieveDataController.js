@@ -10,29 +10,43 @@ let warning1Threshold = 500;
 let warning2Threshold = 1000;
 let warning3Threshold = 1500;
 let alertThreshold = 2000;
-let lastLoggedTime = null;
+let lastLoggedMinute = null;
 let data = [];
 exports.receiveData = (req, res) => {
-    const { value } = req.body;
-  const now = new Date();
+ const { value } = req.body;
+const now = new Date();
+const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in ms
+const istDate = new Date(now.getTime() + istOffset);
 
-  // Save to memory
-  data.push({ time: now.toISOString(), value });
+// Add new value to memory
+data.push({
+  time: istDate.toISOString(), // Store IST time
+  value: value,
+});
 
-  setLatestValue(value);
+setLatestValue(value);
 
-  // Keep last 60
-  if (data.length > 60) {
-    data = data.slice(-60);
-  }
+// Keep only the last 60 values in memory
+if (data.length > 60) {
+  data = data.slice(-60);
+}
 
-  // Round to minute
-  const currentMinuteKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+// Use IST minute
+const currentMinute = istDate.getMinutes();
 
-  if (currentMinuteKey !== lastLoggedTime) {
-    lastLoggedTime = currentMinuteKey;
-    console.log("Appending to sheet:", value);
-    appendToSheet(value);
+if (currentMinute !== lastLoggedMinute) {
+  console.log("Current minute (IST):", currentMinute);
+  console.log("Last logged minute:", lastLoggedMinute);
+  console.log("Append to sheet:", value);
+  lastLoggedMinute = currentMinute;
+  appendToSheet(value); // append only once per minute
+}
+
+  if (value == 0 || value > 2000) {
+    isWarning1ThresholdSended = false;
+    isWarning2ThresholdSended = false;
+    isWarning3ThresholdSended = false;
+    isAlertThresholdSended = false; // Reset all notification flags when value is 0
   }
   // Check thresholds and send notifications
   if (
