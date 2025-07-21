@@ -2,6 +2,9 @@ const { getFromSheet } = require("../services/sheetService.js");
 const { getLatestValue } = require("../utils/sharedData.js");
 const downsampleTo10Seconds = require("../utils/downsample.js");
 const dayjs = require("dayjs");
+const { sheets } = require("googleapis/build/src/apis/sheets/index.js");
+let sheetData = [];
+let ChartData = [];
 exports.getLiveData = async (req, res) => {
 
   const Value = getLatestValue();
@@ -26,8 +29,8 @@ const oneHourData = ChartData2.filter(([timestamp, value]) => {
   return utcTime > oneHourAgoUTC;
 });
 
-  // Get the last 3600 entries for ChartData
-  ChartData = sheetData.slice(-3600);
+  // Get the last 60 entries for ChartData
+  ChartData = sheetData.slice(-60);
   const reducedData = downsampleTo10Seconds(ChartData);
   res.json({
     userValue: `${Value}`,
@@ -35,13 +38,14 @@ const oneHourData = ChartData2.filter(([timestamp, value]) => {
       time,
       value: Number(value),
     })),
-    // ChartData: ChartData.map(([time, value]) => ({
-    //   time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
-    //   value: Number(value),
-    // })),
-    ChartData: oneHourData.map(([time, value]) => ({
+    ChartData: ChartData.map(([time, value]) => ({
       time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
       value: Number(value),
     })),
+    // ChartData: oneHourData.map(([time, value]) => ({
+    //   time: new Date(time).toLocaleString("sv-SE").replace(" ", "T"),
+    //   value: Number(value),
+    // })),
+   
   });
 };
