@@ -28,19 +28,21 @@ setLatestValue(value);
 
 // Keep only the last 60 values in memory
 if (data.length > 60) {
-  data = data.slice(-60);
+  oneMinuteData = data.slice(-1);
+  appendToSheet(oneMinuteData);
+  data = []; // Clear the data after appending
 }
 
-// Use IST minute
-const currentMinute = istDate.getMinutes();
+// // Use IST minute
+// const currentMinute = istDate.getMinutes();
 
-if (currentMinute !== lastLoggedMinute) {
-  console.log("Current minute (IST):", currentMinute);
-  console.log("Last logged minute:", lastLoggedMinute);
-  console.log("Append to sheet:", value);
-  lastLoggedMinute = currentMinute;
-  appendToSheet(value); // append only once per minute
-}
+// if (currentMinute !== lastLoggedMinute) {
+//   console.log("Current minute (IST):", currentMinute);
+//   console.log("Last logged minute:", lastLoggedMinute);
+//   console.log("Append to sheet:", value);
+//   lastLoggedMinute = currentMinute;
+//   appendToSheet(value); // append only once per minute
+// }
 
   if (value == 0 || value > 2000) {
     isWarning1ThresholdSended = false;
