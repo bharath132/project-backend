@@ -13,44 +13,9 @@ let alertThreshold = 2000;
 let lastLoggedMinute = null;
 let data = [];
 exports.receiveData = (req, res) => {
-<<<<<<< HEAD
- const { value } = req.body;
-const now = new Date();
-const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in ms
-const istDate = new Date(now.getTime() + istOffset);
-
-// Add new value to memory
-data.push({
-  time: istDate.toISOString(), // Store IST time
-  value: value,
-});
-
-setLatestValue(value);
-
-// Keep only the last 60 values in memory
-if (data.length > 60) {
-  const oneMinuteData = [data[data.length - 1]];// Get the last value
-  console.log("Appending to sheet:", oneMinuteData);
-  appendToSheet(oneMinuteData);
-  data = []; // Clear the data after appending
-}
-
-// // Use IST minute
-// const currentMinute = istDate.getMinutes();
-
-// if (currentMinute !== lastLoggedMinute) {
-//   console.log("Current minute (IST):", currentMinute);
-//   console.log("Last logged minute:", lastLoggedMinute);
-//   console.log("Append to sheet:", value);
-//   lastLoggedMinute = currentMinute;
-//   appendToSheet(value); // append only once per minute
-// }
-
-=======
   const { value } = req.body;
   setLatestValue(value);
 
->>>>>>> parent of f91a988 (test)
   if (value == 0 || value > 2000) {
     isWarning1ThresholdSended = false;
     isWarning2ThresholdSended = false;
