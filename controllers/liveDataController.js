@@ -4,7 +4,7 @@ const downsampleTo10Seconds = require("../utils/downsample.js");
 const dayjs = require("dayjs");
 exports.getLiveData = async (req, res) => {
 
-  const latestValue = getLatestValue();
+  const Value = getLatestValue();
   await getFromSheet();
   //filter and simplify the data
   let simplified = sheetData.filter(
@@ -30,7 +30,7 @@ const oneHourData = ChartData2.filter(([timestamp, value]) => {
   ChartData = sheetData.slice(-3600);
   const reducedData = downsampleTo10Seconds(ChartData);
   res.json({
-    userValue: `${latestValue}`,
+    userValue: `${Value}`,
     history: simplified.map(([time, value]) => ({
       time,
       value: Number(value),
