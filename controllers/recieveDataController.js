@@ -11,19 +11,17 @@ let warning2Threshold = 1000;
 let warning3Threshold = 1500;
 let alertThreshold = 2000;
 let lastLoggedMinute = null;
+let data = [];
 exports.receiveData = (req, res) => {
-  let data = [];
   const { value } = req.body;
   const now = new Date();
 
   // Add new value to memory
-  data = [
-    ...data,
-    {
-      time: now.toISOString(),
-      value: value,
-    },
-  ];
+  data.push({
+    time: now.toISOString(),
+    value: value,
+  });
+
   setLatestValue(value);
 
   // Keep only the last 60 values in memory
