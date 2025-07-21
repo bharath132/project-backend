@@ -28,7 +28,7 @@ setLatestValue(value);
 
 // Keep only the last 60 values in memory
 if (data.length > 60) {
-  oneMinuteData = data.slice(-1)[0]; // Get the last value
+  const oneMinuteData = [data[data.length - 1]];// Get the last value
   console.log("Appending to sheet:", oneMinuteData);
   appendToSheet(oneMinuteData);
   data = []; // Clear the data after appending
