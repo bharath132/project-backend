@@ -10,7 +10,7 @@ let warning1Threshold = 500;
 let warning2Threshold = 1000;
 let warning3Threshold = 1500;
 let alertThreshold = 2000;
-let lastLoggedMinute = null;
+let lastLoggedTime = null;
 let data = [];
 exports.receiveData = (req, res) => {
     const { value } = req.body;
