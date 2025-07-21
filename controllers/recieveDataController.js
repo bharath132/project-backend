@@ -11,8 +11,32 @@ let warning2Threshold = 1000;
 let warning3Threshold = 1500;
 let alertThreshold = 2000;
 exports.receiveData = (req, res) => {
+  let lastLoggedMinute = null;
+
   const { value } = req.body;
+  const now = new Date();
+
+  // Add new value to memory
+  data = [
+    ...data,
+    {
+      time: now.toISOString(),
+      value: value,
+    },
+  ];
   setLatestValue(value);
+
+  // Keep only the last 60 values in memory
+  if (data.length > 60) {
+    data = data.slice(-60);
+  }
+
+  // Only append to sheet if the minute has changed
+  const currentMinute = now.getMinutes();
+  if (currentMinute !== lastLoggedMinute) {
+    lastLoggedMinute = currentMinute;
+    appendToSheet(value); // append only once per minute
+  }
 
   if (value == 0 || value > 2000) {
     isWarning1ThresholdSended = false;
@@ -62,10 +86,7 @@ exports.receiveData = (req, res) => {
     );
     isAlertThresholdSended = true; // Set the flag to true after sending the notification
   }
-  // Append the value to the Google Sheet
-  appendToSheet(value);
-  // Log the received data
-  console.log(`Received data: ${JSON.stringify(req.body)}`);
+
   res.json({
     receivedData: req.body,
   });
