@@ -65,10 +65,17 @@ exports.receiveData = (req, res) => {
     isAlertThresholdSended = true; // Set the flag to true after sending the notification
   }
   // Append the value to the Google Sheet
-  appendToSheet(value);
+  // appendToSheet(value);
   // Log the received data
+  data.push(value);
+  if (data.length >= 60) {
+    appendToSheet(data[data.length - 1]);
+    data = [];
+  }
   console.log(`Received data: ${JSON.stringify(req.body)}`);
   res.json({
     receivedData: req.body,
   });
+  // Send the data to WebSocket clients
+
 };
